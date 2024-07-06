@@ -12,8 +12,7 @@ struct ContentView: View {
     
     var body: some View {
         VStack {
-            DatePicker("Please enter a date", selection: $wakeUp, in: Date.now...)
-                .labelsHidden()
+            Text(Date.now.formatted(date: .long, time: .shortened))
         }
         .padding()
     }

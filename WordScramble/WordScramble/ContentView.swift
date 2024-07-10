@@ -11,6 +11,7 @@ struct ContentView: View {
     @State private var useWords = [String]()
     @State private var rootWord = ""
     @State private var newWord = ""
+    @State private var score = 0
     
     @State private var errorTitle = ""
     @State private var errorMessage = ""
@@ -32,12 +33,19 @@ struct ContentView: View {
                         }
                     }
                 }
+                
+                Section("Score") {
+                    Text("\(score)")
+                }
             }
             .navigationTitle(rootWord)
             .onSubmit(addNewWord)
             .onAppear(perform: startGame)
             .alert(errorTitle, isPresented: $showingError) {} message: {
                 Text(errorMessage)
+            }
+            .toolbar {
+                Button("Reset", action: startGame)
             }
         }
     }
@@ -46,6 +54,16 @@ struct ContentView: View {
         let answer = newWord.lowercased().trimmingCharacters(in: .whitespacesAndNewlines)
         
         guard answer.count > 0 else { return }
+        
+        guard isNotRoot(word: answer) else {
+            wordError(title: "Word same", message: "Do not copy")
+            return
+        }
+        
+        guard isLong(word: answer) else {
+            wordError(title: "Word too short", message: "More than 3 letters")
+            return
+        }
         
         guard isOriginal(word: answer) else {
             wordError(title: "Word used already", message: "Be more original")
@@ -66,6 +84,7 @@ struct ContentView: View {
             useWords.insert(answer, at: 0)
         }
         newWord = ""
+        score += answer.count
     }
     
     func startGame() {
@@ -109,6 +128,14 @@ struct ContentView: View {
         errorTitle = title
         errorMessage = message
         showingError = true
+    }
+    
+    func isLong(word: String) -> Bool {
+        word.count > 3
+    }
+    
+    func isNotRoot(word: String) -> Bool {
+        word != rootWord
     }
 }
 

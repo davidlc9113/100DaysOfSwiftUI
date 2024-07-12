@@ -27,6 +27,10 @@ struct ContentView: View {
     @State private var currentAnswer = ""
     @State private var currentIndex = 0
     @State private var maxIndex = 3
+    
+    @State private var rotationAngle = [0.0, 0.0, 0.0]
+    @State private var opacities = [1.0, 1.0, 1.0]
+    @State private var scales = [1.0, 1.0, 1.0]
 
     var body: some View {
         ZStack {
@@ -56,8 +60,23 @@ struct ContentView: View {
                     ForEach(0..<3) { number in
                         Button {
                             flagTapped(number)
+                            withAnimation {
+                                rotationAngle[number] += 360
+                                for i in 0..<3 {
+                                    if i != number {
+                                        opacities[i] = 0.25
+                                        scales[i] = 0.75
+                                    }
+                                }
+                            }
                         } label: {
                             FlagImage(country: countries[number])
+                                .opacity(opacities[number])
+                                .scaleEffect(scales[number])
+                                .rotation3DEffect(
+                                    .degrees(rotationAngle[number]),
+                                                          axis: /*@START_MENU_TOKEN@*/(x: 0.0, y: 1.0, z: 0.0)/*@END_MENU_TOKEN@*/
+                                )
                         }
                     }
                 }
@@ -107,6 +126,8 @@ struct ContentView: View {
     func askQuestion() {
         countries.shuffle()
         correctAnswer = Int.random(in: 0...2)
+        opacities = [1.0, 1.0, 1.0]
+        scales = [1.0, 1.0, 1.0]
     }
     
     func resetGame() {

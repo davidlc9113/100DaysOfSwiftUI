@@ -8,7 +8,17 @@
 import SwiftUI
 
 struct DetailView: View {
-    var activity: Activity
+    var id: UUID
+    var activities: Activities
+    
+    var activity: Activity {
+        let filtered = activities.data.filter({ $0.id == id })
+        if filtered.isEmpty == false {
+            return filtered[0]
+        } else {
+            return Activity(title: "", description: "")
+        }
+    }
     
     var body: some View {
         NavigationStack {
@@ -20,13 +30,28 @@ struct DetailView: View {
                 Section("Description") {
                     Text(activity.description)
                 }
+                
+                Section("Count") {
+                    Text("\(activity.count)")
+                }
             }
             .navigationTitle("Activity detail")
             .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                Button("Bump", action: bumpActivity)
+            }
+        }
+    }
+    
+    func bumpActivity() {
+        if let index = activities.data.firstIndex(of: activity) {
+            var newActivity = activities.data[index]
+            newActivity.count += 1
+            activities.data[index] = newActivity
         }
     }
 }
 
 #Preview {
-    DetailView(activity: Activity(title: "Title", description: "Description"))
+    DetailView(id: UUID(), activities: Activities())
 }

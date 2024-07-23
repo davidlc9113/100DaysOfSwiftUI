@@ -7,10 +7,15 @@
 
 import SwiftUI
 
-struct Activity: Identifiable, Codable {
+struct Activity: Identifiable, Codable, Equatable {
     var id = UUID()
+    var count = 1
     let title: String
     let description: String
+    
+    static func == (lhs: Activity, rhs: Activity) -> Bool {
+        return lhs.id == rhs.id
+    }
 }
 
 @Observable
@@ -44,7 +49,7 @@ struct ContentView: View {
                 ForEach(activities.data) { activity in
                     VStack {
                         NavigationLink(activity.title) {
-                            DetailView(activity: findActivity(by: activity.id))
+                            DetailView(id: activity.id, activities: activities)
                         }
                     }
                 }

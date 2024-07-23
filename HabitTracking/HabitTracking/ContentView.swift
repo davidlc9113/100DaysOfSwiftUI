@@ -43,7 +43,9 @@ struct ContentView: View {
             List {
                 ForEach(activities.data) { activity in
                     VStack {
-                        Text(activity.title)
+                        NavigationLink(activity.title) {
+                            DetailView(activity: findActivity(by: activity.id))
+                        }
                     }
                 }
                 .onDelete(perform: removeActivity)
@@ -60,6 +62,15 @@ struct ContentView: View {
     func removeActivity(at offsets: IndexSet) {
         for index in offsets {
             activities.data.remove(at: index)
+        }
+    }
+    
+    func findActivity(by id: UUID) -> Activity {
+        let filtered = activities.data.filter({ $0.id == id })
+        if filtered.isEmpty == false {
+            return filtered[0]
+        } else {
+            return Activity(title: "", description: "")
         }
     }
 }
